@@ -1,89 +1,93 @@
 import React, { Component } from 'react';
-import './App.css';
+
+import classes from './App.css';
 import Person from './Person/Person';
 
 class App extends Component {
   state = {
     persons: [
-      { id: 'ab', name: 'Max', age: 28 },
-      { id: 'cd', name: 'Manu', age: 29 },
-      { id: 'ef', name: 'Kim', age: 45 }
+      { id: 'asfa1', name: 'Max', age: 28 },
+      { id: 'vasdf1', name: 'Manu', age: 29 },
+      { id: 'asdf11', name: 'Stephanie', age: 26 }
     ],
+    otherState: 'some other value',
     showPersons: false
-  }
+  };
 
   nameChangedHandler = (event, id) => {
-    const personIndex = this.state.persons.findIndex(p => (
-      p.id === id
-    ))
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
 
-    // update state in an immutable fashion!!
     const person = {
       ...this.state.persons[personIndex]
-    }
+    };
 
-    person.name = event.target.value
+    // const person = Object.assign({}, this.state.persons[personIndex]);
 
-    const persons = [...this.state.persons]
-    persons[personIndex] = person
+    person.name = event.target.value;
 
-    this.setState({
-      persons: persons
-    })
-  }
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState({ persons: persons });
+  };
+
+  deletePersonHandler = personIndex => {
+    // const persons = this.state.persons.slice();
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
+    this.setState({ persons: persons });
+  };
 
   togglePersonsHandler = () => {
-    this.setState({
-      showPersons: !this.state.showPersons
-    })
-  }
-
-  deletePersonHandler = (index) => {
-    // const persons = this.state.persons.slice()
-    // update state in an immutable fashion!!
-    const persons = [...this.state.persons]
-    persons.splice(index, 1)
-    this.setState({ persons: persons })
-
-  }
+    const doesShow = this.state.showPersons;
+    this.setState({ showPersons: !doesShow });
+  };
 
   render() {
     let persons = null;
+    let btnClass = '';
+
     if (this.state.showPersons) {
       persons = (
         <div>
-          {
-            this.state.persons.map((person, index) => (
+          {this.state.persons.map((person, index) => {
+            return (
               <Person
-                key={person.id}
+                click={() => this.deletePersonHandler(index)}
                 name={person.name}
                 age={person.age}
-                changed={(event) => this.nameChangedHandler(event, person.id)}
-                click={() => this.deletePersonHandler(index)} />
-            ))
-          }
+                key={person.id}
+                changed={event => this.nameChangedHandler(event, person.id)}
+              />
+            );
+          })}
         </div>
-      )
+      );
+
+      btnClass = classes.Red;
     }
 
-    const classes = []
+    const assignedClasses = [];
     if (this.state.persons.length <= 2) {
-      classes.push('red')
+      assignedClasses.push(classes.red); // classes = ['red']
     }
     if (this.state.persons.length <= 1) {
-      classes.push('bold')
+      assignedClasses.push(classes.bold); // classes = ['red', 'bold']
     }
 
     return (
-      <div className="App">
-        <p className={classes.join(' ')}>This is really working!</p>
-        <button
-          className="button"
-          onClick={() => this.togglePersonsHandler()}>Toggle Persons
+      <div className={classes.App}>
+        <h1>Hi, I'm a React App</h1>
+        <p className={assignedClasses.join(' ')}>This is really working!</p>
+        <button className={btnClass} onClick={this.togglePersonsHandler}>
+          Toggle Persons
         </button>
         {persons}
-      </div >
+      </div>
     );
+    // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
   }
 }
 
